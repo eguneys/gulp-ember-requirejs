@@ -1,0 +1,4 @@
+node_modules
+public
+.tmp
+app/client/bower_components

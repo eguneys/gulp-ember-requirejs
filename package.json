@@ -1,0 +1,50 @@
+{
+  "name": "gulptest",
+  "version": "0.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "bower": "^1.3.5",
+    "bower-requirejs": "^0.11.0",
+    "connect-livereload": "^0.4.0",
+    "gulp": "^3.8.5",
+    "gulp-autoprefixer": "0.0.7",
+    "gulp-bower-files": "^0.2.5",
+    "gulp-cache": "^0.2.0",
+    "gulp-changed": "^0.4.0",
+    "gulp-concat": "^2.2.0",
+    "gulp-csso": "^0.2.9",
+    "gulp-debug": "^0.3.0",
+    "gulp-ember-templates": "^0.5.2",
+    "gulp-filter": "^0.5.0",
+    "gulp-flatten": "0.0.2",
+    "gulp-if": "^1.2.1",
+    "gulp-ignore": "^1.1.0",
+    "gulp-imagemin": "^0.6.1",
+    "gulp-insert": "^0.4.0",
+    "gulp-jshint": "^1.6.3",
+    "gulp-livereload": "^2.1.0",
+    "gulp-load-plugins": "^0.5.3",
+    "gulp-nodemon": "^1.0.4",
+    "gulp-plumber": "^0.6.3",
+    "gulp-rimraf": "^0.1.0",
+    "gulp-size": "^0.4.0",
+    "gulp-uglify": "^0.3.1",
+    "gulp-useref": "^0.4.5",
+    "gulp-util": "^2.2.19",
+    "jshint-stylish": "^0.2.0",
+    "lazypipe": "^0.2.1",
+    "requirejs": "^2.1.14",
+    "run-sequence": "^0.3.6",
+    "wiredep": "^1.8.1"
+  },
+  "dependencies": {
+    "express": "^4.4.5",
+    "express3-handlebars": "^0.5.0"
+  }
+}
