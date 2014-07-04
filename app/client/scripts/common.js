@@ -10,7 +10,6 @@ requirejs.config({
         jquery: 'jquery/dist/jquery',
         requirejs: 'requirejs/require',
         handlebars: 'handlebars/handlebars',
-        // http://stackoverflow.com/questions/13377373/shim-twitter-bootstrap-for-requirejs
         bootstrap: 'bootstrap-sass-official/assets/javascripts/bootstrap'
     },
     shim: {
@@ -21,8 +20,17 @@ requirejs.config({
             ],
             exports: 'Ember'
         },
-        'bootstrap/transition': { deps: ['jquery'] },
-        'bootstrap/collapse': { deps: ['jquery', 'bootstrap/transition'] }
+        'bootstrap/transition': {
+            deps: [
+                'jquery'
+            ]
+        },
+        'bootstrap/collapse': {
+            deps: [
+                'jquery',
+                'bootstrap/transition'
+            ]
+        }
     },
     packages: [
 

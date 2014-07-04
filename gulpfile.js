@@ -153,7 +153,8 @@ gulp.task('bower-rjs', function() {
 
     bowerRjs({
         config: paths.src.common + '/scripts/common.js',
-        exclude: ['bootstrap-sass-official']
+        exclude: ['bootstrap-sass-official'],
+        baseUrl: paths.src.common + '/bower_components'
     });
 });
 
