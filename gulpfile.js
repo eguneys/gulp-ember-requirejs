@@ -1,6 +1,6 @@
 'use strict';
 
-// npm install --save-dev gulp gulp-load-plugins gulp-util gulp-autoprefixer gulp-cache gulp-imagemin gulp-bower-files gulp-filter gulp-ignore gulp-flatten gulp-csso gulp-useref gulp-if gulp-uglify gulp-rimraf gulp-size gulp-jshint jshint-stylish gulp-livereload gulp-nodemon wiredep bower-requirejs requirejs gulp-debug gulp-changed gulp-concat gulp-ember-templates gulp-insert gulp-plumber
+// npm install --save-dev gulp gulp-load-plugins gulp-util gulp-autoprefixer gulp-cache gulp-imagemin gulp-bower-files gulp-filter gulp-ignore gulp-flatten gulp-csso gulp-useref gulp-if gulp-uglify gulp-rimraf gulp-size gulp-jshint jshint-stylish gulp-livereload gulp-nodemon wiredep bower-requirejs requirejs gulp-debug gulp-changed gulp-concat gulp-ember-templates gulp-insert gulp-plumber merge-stream gulp-sass
 
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
@@ -13,6 +13,13 @@ var paths = {
     dev_dist: 'public/assets'
 };
 
+var templatePaths = {
+    './': 'common',
+    'home': 'home',
+    'about': 'about',
+    'partials': 'partials'
+};
+
 /*** BUILD ***/
 
 gulp.task('clean', function() {
@@ -20,10 +27,17 @@ gulp.task('clean', function() {
         .pipe($.rimraf());
 });
 
-gulp.task('styles', function() {
-    return gulp.src(paths.src.common + '/styles/**/*.css')
+gulp.task('build-dev-styles', function() {
+    return gulp.src(paths.src.common + '/styles/style.scss')
+        .pipe($.sass({
+            errLogToConsole: true,
+            includePaths: [paths.src.common + '/bower_components',
+                          paths.src.common + 'styles']
+        }))
+        .pipe($.concat('main.css'))
         .pipe($.autoprefixer('last 1 version'))
-        .pipe(gulp.dest('.tmp/styles'));
+      //.pipe(gulp.dest('.tmp/styles'));
+        .pipe(gulp.dest(paths.dev_dist + '/styles'));
 });
 
 gulp.task('images', function() {
@@ -51,18 +65,26 @@ gulp.task('extras', function() {
         .pipe(gulp.dest(paths.dev_dist));
 });
 
-gulp.task('build-dev-templates', ['styles'], function() {
+gulp.task('build-dev-templates', function() {
     var amdModulePrefix = 'define(["ember"], function(Ember) {',
         amdModulePostfix = '});';
+
+    var mergeStream = require('merge-stream')();
     
-    return gulp.src([paths.src.common + '/templates/**/*.hbs'])
-        .pipe($.plumber())
-        .pipe($.emberTemplates({
-            type: 'browser'
-        }))
-        .pipe($.concat('common.js'))
-        .pipe($.insert.wrap(amdModulePrefix, amdModulePostfix))
-        .pipe(gulp.dest(paths.dev_dist + '/templates'));
+    for (var src in templatePaths) {
+        var dst = templatePaths[src];
+        var stream = gulp.src([paths.src.common + '/templates/' + src + '/*.hbs'])
+            .pipe($.plumber())
+            .pipe($.emberTemplates({
+                type: 'browser'
+            }))
+            .pipe($.concat(dst + '.js'))
+            .pipe($.insert.wrap(amdModulePrefix, amdModulePostfix))
+            .pipe(gulp.dest(paths.dev_dist + '/templates'));
+
+        mergeStream.add(stream);
+    }
+    return mergeStream;
 });
 
 gulp.task('build-dev-templates2', function() {
@@ -82,7 +104,7 @@ gulp.task('build-dev-commonjs', function() {
 });
 
 gulp.task('build-dev-mainjs', ['jshint'], function() {
-    return gulp.src([paths.src.common + '/scripts/*.js'])
+    return gulp.src([paths.src.common + '/scripts/**/*.js'])
         .pipe($.changed(paths.dev_dist + '/scripts'))
         .pipe(gulp.dest(paths.dev_dist + '/scripts'));
 });
@@ -94,18 +116,22 @@ gulp.task('build', ['jshint', 'html', 'images', 'fonts', 'extras'], function() {
     return gulp.src(paths.dev_dist + '/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
-gulp.task('build-dev-scripts', function(cb) {
-    runSequence('clean',
-                ['jshint', 'build-dev-templates', 'build-dev-commonjs', 'build-dev-mainjs'],
-               cb);
-});
+gulp.task('build-dev-scripts', ['jshint', 'build-dev-commonjs', 'build-dev-mainjs']);
 
 //---
 // Dev Tasks
 //---
 
 gulp.task('server', ['build', 'watch']);
-gulp.task('devserver', ['build-dev-scripts', 'watch-devserver']);
+gulp.task('devserver', function(cb) {
+
+    runSequence('clean',
+                ['build-dev-templates',
+                 'build-dev-styles',
+                 'build-dev-scripts',
+                 'watch-devserver'],
+                cb);
+});
 
 
 
@@ -126,7 +152,8 @@ gulp.task('bower-rjs', function() {
     var bowerRjs = require('bower-requirejs');
 
     bowerRjs({
-        config: paths.src.common + '/scripts/common.js'
+        config: paths.src.common + '/scripts/common.js',
+        exclude: ['bootstrap-sass-official']
     });
 });
 
@@ -146,10 +173,10 @@ gulp.task('serve', ['build-dev-scripts'], function() {
 gulp.task('watch-devserver', ['serve'], function() {
     $.livereload.listen();
 
-    gulp.watch(paths.src.common + '/styles/**/*.css', ['styles', 'build-dev-mainjs']);
+    gulp.watch(paths.src.common + '/styles/**/*.scss', ['build-dev-styles']);
 
     gulp.watch([
-        paths.src.common + '/templates/*.hbs'
+        paths.src.common + '/templates/**/*.hbs'
     ], ['build-dev-templates']);
 
     gulp.watch(paths.src.common + '/scripts/**/*.js', ['build-dev-mainjs']);
