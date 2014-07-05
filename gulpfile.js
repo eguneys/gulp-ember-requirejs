@@ -96,7 +96,6 @@ gulp.task('build-dev-templates2', function() {
         .pipe(gulp.dest(paths.dev_dist + '/templates'));
 });
 
-
 gulp.task('build-dev-commonjs', function() {
     return gulp.src([paths.src.common + '/bower_components/**/*.js'])
         .pipe($.changed(paths.dev_dist + '/scripts/lib'))
@@ -143,6 +142,15 @@ gulp.task('jshint', function() {
                     'app/**/*.js',
                     '!app/client/bower_components/**'])
         .pipe($.jshint())
+        .pipe($.jshint.reporter('jshint-stylish'));
+});
+
+gulp.task('jshint-fail', function() {
+    return gulp.src(['gulpfile.js',
+                    'config/*.js',
+                    'app/**/*.js',
+                    '!app/client/bower_components/**'])
+        .pipe($.jshint())
         .pipe($.jshint.reporter('jshint-stylish'))
         .pipe($.jshint.reporter('fail'));
 });
@@ -155,6 +163,9 @@ gulp.task('bower-rjs', function() {
         config: paths.src.common + '/scripts/common.js',
         exclude: ['bootstrap-sass-official'],
         baseUrl: paths.src.common + '/bower_components'
+    }, function() {
+        // 
+        runSequence(['build-dev-commonjs']);
     });
 });
 

@@ -1,8 +1,10 @@
 requirejs.config({
-    baseUrl: '/public/assets/scripts/lib',
+    baseUrl: 'public/assets/scripts/lib',
     paths: {
         app: '../',
         routes: '../routes',
+        models: '../models',
+        views: '../views',
         controllers: '../controllers',
         templates: '../../templates',
         mixins: '../mixins',
@@ -10,7 +12,8 @@ requirejs.config({
         jquery: 'jquery/dist/jquery',
         requirejs: 'requirejs/require',
         handlebars: 'handlebars/handlebars',
-        bootstrap: 'bootstrap-sass-official/assets/javascripts/bootstrap'
+        bootstrap: 'bootstrap-sass-official/assets/javascripts/bootstrap',
+        'ember-data': 'ember-data/ember-data'
     },
     shim: {
         ember: {
@@ -19,6 +22,12 @@ requirejs.config({
                 'jquery'
             ],
             exports: 'Ember'
+        },
+        'ember-data': {
+            deps: [
+                'ember'
+            ],
+            exports: 'DS'
         },
         'bootstrap/transition': {
             deps: [

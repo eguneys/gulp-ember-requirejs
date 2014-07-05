@@ -9,26 +9,26 @@
     <h3>Gulp. RequireJS. EmberJS.</h3>
     <p class="lead">NodeJS Express</p>
   </div>
-  
-  <div class="features">
-      <div class="row">
-        <div class="col-md-4 col-md-offset-2">
-          <h6>Livereload</h6>
-          <p>Watch changes live on browser while you save your code</p>
-        </div>
-        <div class="col-md-4 col-md-offset-1">
-          <h6>Deploy</h6>
-        </div>
+
+  {{#each}}
+    <div class="row features">
+      <div class="col-md-4 col-md-offset-2">
+        <h6>{{firstObject.title}}</h6>
+        <p>{{firstObject.body}}</p>
       </div>
-  </div>
+      <div class="col-md-4 col-md-offset-1">
+        <h6>{{lastObject.title}}</h6>
+        <p>{{lastObject.body}}</p>
+      </div>
+    </div>
+  {{/each}}
 </div>
 
 <section class="content-12">
   <center>
-    <a class="btn btn-lg btn-danger" href="https://github.com/gulpjs/gulp/blog/getting-started.md">Get Started!</a>
+    <a class="btn btn-lg btn-danger" href="https://github.com/eguneys/gulp-ember-requirejs">Get Started!</a>
     <br>
     <br>
     <br>
   </center>
 </section>
-</div>
