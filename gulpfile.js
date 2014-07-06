@@ -1,6 +1,6 @@
 'use strict';
 
-// npm install --save-dev gulp gulp-load-plugins gulp-util gulp-autoprefixer gulp-cache gulp-imagemin gulp-bower-files gulp-filter gulp-ignore gulp-flatten gulp-csso gulp-useref gulp-if gulp-uglify gulp-rimraf gulp-size gulp-jshint jshint-stylish gulp-livereload gulp-nodemon wiredep bower-requirejs requirejs gulp-debug gulp-changed gulp-concat gulp-ember-templates gulp-insert gulp-plumber merge-stream gulp-sass
+// npm install --save-dev gulp gulp-load-plugins gulp-util gulp-autoprefixer gulp-cache gulp-imagemin gulp-bower-files gulp-filter gulp-ignore gulp-flatten gulp-csso gulp-useref gulp-if gulp-uglify gulp-rimraf gulp-size gulp-jshint jshint-stylish gulp-livereload gulp-nodemon wiredep bower-requirejs requirejs gulp-debug gulp-changed gulp-concat gulp-ember-templates gulp-insert gulp-plumber merge-stream gulp-sass gulp-grep-stream
 
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
@@ -32,7 +32,7 @@ gulp.task('build-dev-sass', function() {
         .pipe($.sass({
             errLogToConsole: true,
             includePaths: [paths.src.common + '/bower_components',
-                          paths.src.common + 'styles']
+                           paths.src.common + 'styles']
         }))
         .pipe($.concat('main.css'))
         .pipe($.autoprefixer('last 1 version'))
@@ -55,13 +55,14 @@ gulp.task('build-dev-fonts', function() {
                        $.bowerFiles(),
                        gulp.src(paths.src.common + '/fonts/**/*')
                       )
-        .pipe($.filter('**/*.{eot,svg,ttf,woff}'))
+      //.pipe($.filter('**/*.{eot,svg,ttf,woff}')) // https://github.com/yeoman/generator-gulp-webapp/issues/159
+        .pipe($.grepStream('**/*.{eot,svg,ttf,woff}'))
         .pipe($.flatten())
         .pipe(gulp.dest(paths.dev_dist + '/fonts'));
 });
 
 gulp.task('build-dev-extras', function() {
-    return gulp.src(paths.src.common + '/*')
+    return gulp.src(paths.src.common + '/*.*')
         .pipe(gulp.dest(paths.dev_dist));
 });
 
@@ -118,11 +119,11 @@ gulp.task('build-requirejs', ['build-scripts', 'build-styles'], function() {
 
 gulp.task('build-optimize', ['build-requirejs']);
 
-gulp.task('build-styles', ['build-dev-sass', 'build-dev-images', 'build-dev-extras']);
+gulp.task('build-styles', ['build-dev-sass', 'build-dev-fonts', 'build-dev-images', 'build-dev-extras']);
 
 gulp.task('build-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates']);
 
-gulp.task('build-dev-styles', ['build-dev-sass', 'build-dev-images', 'build-dev-extras']);
+gulp.task('build-dev-styles', ['build-dev-sass', 'build-dev-fonts', 'build-dev-images', 'build-dev-extras']);
 
 gulp.task('build-dev-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates']);
 
@@ -176,9 +177,20 @@ gulp.task('bower-rjs', function() {
         exclude: ['bootstrap-sass-official'],
         baseUrl: paths.src.common + '/bower_components'
     }, function() {
-        // 
+        //
         runSequence(['build-dev-commonjs']);
     });
+});
+
+// inject bower components into sass files
+gulp.task('wiredep', function() {
+    var wiredep = require('wiredep').stream;
+
+    gulp.src(paths.src.common + '/styles/*.scss')
+        .pipe(wiredep({
+            ignorePath: '../bower_components/'
+        }))
+        .pipe(gulp.dest(paths.src.common + '/styles'));
 });
 
 gulp.task('serve', ['build-dev'], function() {
@@ -213,7 +225,7 @@ gulp.task('watch-devserver', ['serve'], function() {
         $.livereload.changed(files);
     });
     
-    gulp.watch('bower.json', ['bower-rjs']);
+    gulp.watch('bower.json', ['bower-rjs', 'wiredep']);
     gulp.watch('gulpfile.js', function() {
         console.log($.util.colors.red('\n----------' +
                                     '\nRestart the Gulp process' +

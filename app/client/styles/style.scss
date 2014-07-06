@@ -1,4 +1,15 @@
-@import "bootstrap-sass-official/assets/stylesheets/bootstrap";
+/* override icon-font-path value for bootstrap */
+$icon-font-path: "../fonts/";
+
+//bower:scss
+@import "bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
+//endbower
+
+//bower:css
+// currently cannot import css files with gulp-sass
+//@import "font-awesome/css/font-awesome.css";
+@import "font-awesome/scss/font-awesome.scss";
+//endbower
 
 @import "reset";
 @import "pages/home";

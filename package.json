@@ -23,6 +23,7 @@
     "gulp-ember-templates": "^0.5.2",
     "gulp-filter": "^0.5.0",
     "gulp-flatten": "0.0.2",
+    "gulp-grep-stream": "0.0.2",
     "gulp-if": "^1.2.1",
     "gulp-ignore": "^1.1.0",
     "gulp-imagemin": "^0.6.1",
@@ -43,6 +44,7 @@
     "merge-stream": "^0.1.2",
     "requirejs": "^2.1.14",
     "run-sequence": "^0.3.6",
+    "streamqueue": "^0.1.1",
     "wiredep": "^1.8.1"
   },
   "dependencies": {
