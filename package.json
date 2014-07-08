@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "express": "^4.4.5",
-    "express3-handlebars": "^0.5.0"
+    "express3-handlebars": "^0.5.0",
+    "serve-favicon": "^2.0.1"
   }
 }

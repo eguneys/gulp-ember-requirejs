@@ -1,5 +1,5 @@
 requirejs.config({
-    baseUrl: 'public/assets/scripts/lib',
+    baseUrl: '/public/assets/scripts/lib',
     paths: {
         app: '../app',
         routes: '../app/routes',

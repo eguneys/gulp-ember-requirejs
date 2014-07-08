@@ -1,5 +1,6 @@
 var express = require('express'),
-    path = require('path');
+    path = require('path'),
+    favicon = require('serve-favicon');
 
 
 var app = express();
@@ -16,6 +17,7 @@ app.engine('.hbs', expressHbs({ extname: '.hbs',
 app.set('views', path.join(__dirname, '..', 'app', 'views'));
 app.set('view engine', '.hbs');
 
+router.use(favicon(path.join(__dirname, '..', 'public', 'assets', 'favicon.ico')));
 router.use('/public', express.static(path.join(__dirname, '..', 'public')));
 
 router.get('/', function(req, res) {
