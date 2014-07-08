@@ -1,12 +1,11 @@
 define(['ember', 'app/app', 'mixins/lazy_loader_mixin'], function(Ember, App) {
+
     App.IndexRoute = Ember.Route.extend(App.LazyLoaderMixin, {
-        requireLists: [
-            'models/feature'
-        ],
+        requireLists: ['routes/index_deps'],
+        
         model: function() {
             return this.store.find('feature');
         },
-
         setupController: function(controller, model) {
             model = model.reduce(function(arr, obj, index) {
                 if (index % 2 === 0) {

@@ -17,7 +17,7 @@ define(['ember-data', 'app/app'], function(DS, App) {
         },
         {
             id: '3',
-            title: 'AMD Style',
+            title: 'AMD',
             body: 'Organize your code in modules, in well structured architecture'
         },
         {

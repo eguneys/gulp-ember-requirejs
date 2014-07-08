@@ -5,6 +5,8 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
+var rimraf = require('rimraf');
+var mv = require('mv');
 
 var paths = {
     src: {
@@ -22,9 +24,8 @@ var templatePaths = {
 
 /*** BUILD ***/
 
-gulp.task('clean', function() {
-    return gulp.src(['.tmp', 'public/assets'], { read: false})
-        .pipe($.rimraf());
+gulp.task('clean', function(cb) {
+    rimraf(paths.dev_dist, cb);
 });
 
 gulp.task('build-dev-sass', function() {
@@ -32,7 +33,8 @@ gulp.task('build-dev-sass', function() {
         .pipe($.sass({
             errLogToConsole: true,
             includePaths: [paths.src.common + '/bower_components',
-                           paths.src.common + 'styles']
+                           paths.src.common + '/vendor',
+                           paths.src.common + '/styles']
         }))
         .pipe($.concat('main.css'))
         .pipe($.autoprefixer('last 1 version'))
@@ -53,6 +55,7 @@ gulp.task('build-dev-fonts', function() {
     var streamqueue = require('streamqueue');
     return streamqueue({objectMode: true},
                        $.bowerFiles(),
+                       gulp.src(paths.src.common + '/vendor/**/*'),
                        gulp.src(paths.src.common + '/fonts/**/*')
                       )
       //.pipe($.filter('**/*.{eot,svg,ttf,woff}')) // https://github.com/yeoman/generator-gulp-webapp/issues/159
@@ -106,18 +109,52 @@ gulp.task('build-dev-commonjs', ['jshint'], function() {
 gulp.task('build-dev-mainjs', ['jshint'], function() {
     return gulp.src([paths.src.common + '/scripts/**/*.js'])
         .pipe($.changed(paths.dev_dist + '/scripts'))
-        .pipe(gulp.dest(paths.dev_dist + '/scripts'));
+        .pipe(gulp.dest(paths.dev_dist + '/scripts/app'));
 });
 
-gulp.task('build-requirejs', ['build-scripts', 'build-styles'], function() {
-    
+gulp.task('build-requirejs', ['build-scripts', 'build-styles'], function(cb) {
+    var requirejs = require('requirejs');
+
+    var config = {
+        appDir: paths.dev_dist,
+        baseUrl: 'scripts/lib',
+        mainConfigFile: paths.src.common + '/scripts/common.js',
+        dir: paths.dev_dist + '2',
+        optimize: 'none',
+        skipDirOptimize: true,
+        optimizeCss: 'none',
+        modules: [
+            {
+                name: 'app/common',
+                include: ['app/main']
+            },
+            {
+                name: 'routes/index_deps',
+                exclude: ['app/common']
+            },
+            {
+                name: 'routes/about_deps',
+                exclude: ['app/common']
+            }
+        ]
+    };
+
+    requirejs.optimize(config, function(response) {
+        rimraf(paths.dev_dist, function() {
+            mv(paths.dev_dist + '2', paths.dev_dist, function() {
+                cb();
+            });
+        });
+    });
 });
 
 //----
 // Build Tasks
 //----
 
-gulp.task('build-optimize', ['build-requirejs']);
+gulp.task('build-optimize', ['build-requirejs'], function () {
+    
+});
 
 gulp.task('build-styles', ['build-dev-sass', 'build-dev-fonts', 'build-dev-images', 'build-dev-extras']);
 
@@ -129,7 +166,7 @@ gulp.task('build-dev-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build
 
 gulp.task('build-dev', ['build-dev-scripts', 'build-dev-styles']);
 
-gulp.task('build', ['build-scripts', 'build-styles', 'build-optimize'], function() {
+gulp.task('build', ['build-optimize'], function() {
     return gulp.src(paths.dev_dist + '/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
@@ -137,7 +174,9 @@ gulp.task('build', ['build-scripts', 'build-styles', 'build-optimize'], function
 // Dev Tasks
 //---
 
-gulp.task('server', ['build', 'watch']);
+// run clean manually
+//gulp.task('server', ['build', 'watch']);
+
 gulp.task('devserver', function(cb) {
     runSequence('clean',
                 ['build-dev',
@@ -153,6 +192,7 @@ gulp.task('jshint', function() {
     return gulp.src(['gulpfile.js',
                     'config/*.js',
                     'app/**/*.js',
+                     '!app/client/vendor/**',
                     '!app/client/bower_components/**'])
         .pipe($.jshint())
         .pipe($.jshint.reporter('jshint-stylish'));
@@ -209,7 +249,7 @@ gulp.task('serve', ['build-dev'], function() {
 gulp.task('watch-devserver', ['serve'], function() {
     $.livereload.listen();
 
-    gulp.watch(paths.src.common + '/styles/**/*.scss', ['build-dev-styles']);
+    gulp.watch(paths.src.common + '/styles/**/*.scss', ['build-dev-sass']);
 
     gulp.watch([
         paths.src.common + '/templates/**/*.hbs'
