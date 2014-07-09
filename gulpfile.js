@@ -18,8 +18,7 @@ var paths = {
 var templatePaths = {
     './': 'common',
     'home': 'home',
-    'about': 'about',
-    'partials': 'partials'
+    'guides': 'guides'
 };
 
 /*** BUILD ***/
@@ -77,7 +76,7 @@ gulp.task('build-dev-templates', function() {
     
     for (var src in templatePaths) {
         var dst = templatePaths[src];
-        var stream = gulp.src([paths.src.common + '/templates/' + src + '/*.hbs'])
+        var stream = gulp.src([paths.src.common + '/templates/' + src + '**/*.hbs'])
             .pipe($.plumber())
             .pipe($.emberTemplates({
                 type: 'browser'
@@ -133,7 +132,7 @@ gulp.task('build-requirejs', ['build-scripts', 'build-styles'], function(cb) {
                 exclude: ['app/common']
             },
             {
-                name: 'routes/about_deps',
+                name: 'routes/guides_deps',
                 exclude: ['app/common']
             }
         ]

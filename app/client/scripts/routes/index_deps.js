@@ -1,1 +1,1 @@
-define(['models/feature', 'templates/home']);
+define(['models/feature']);

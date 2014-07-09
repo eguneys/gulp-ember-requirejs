@@ -1,6 +1,8 @@
-define(['app/app', 'routes/index_route', 'routes/about_route'], function(App) {
+define(['app/app', 'routes/index_route', 'routes/guides_route'], function(App) {
     App.Router.map(function() {
-        this.resource('about');
+        this.resource('guides', function() {
+            this.route('guide', { path: '/:guide_id' });
+        });
         this.route('catchall', { path: '/*wildcard'});
     });
 
