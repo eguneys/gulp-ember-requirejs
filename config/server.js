@@ -18,7 +18,7 @@ app.engine('.hbs', expressHbs({ extname: '.hbs',
 app.set('views', path.join(__dirname, '..', 'app', 'views'));
 app.set('view engine', '.hbs');
 
-router.use(favicon(path.join(__dirname, '..', 'public', 'assets', 'favicon.ico')));
+//router.use(favicon(path.join(__dirname, '..', 'public', 'assets', 'favicon.ico')));
 router.use(morgan({format: 'dev'}));
 router.use('/public', express.static(path.join(__dirname, '..', 'public'), { maxAge: 864000000 }));
 

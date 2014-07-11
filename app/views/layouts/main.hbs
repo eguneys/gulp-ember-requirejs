@@ -3,19 +3,34 @@
   <head>
     <title>Setting Up Gulp for Fullstack Development</title>
 
-    <link rel="stylesheet" href="/public/assets/styles/main.css">
+    <link rel="stylesheet" href="/public/assets2/styles/main.css">
     
   </head>
   <body>
     {{{body}}}
 
-    <script src="/public/assets/scripts/lib/requirejs/require.js"></script>
+    <!--
+    <script data-main="/public/assets2/scripts/app/common.js" src="/public/assets2/scripts/lib/requirejs/require.js"></script>
+    -->
+
+    <script src="/public/assets2/scripts/lib/requirejs/require.js"></script>
+    <script src="/public/assets2/scripts/app/common.js"></script>
+    <script>
+     require.config({baseUrl: '/public/assets2/scripts/lib'});
+     require(['app/main']);
+    </script>
+
+    <!--
+    <script src="/public/assets2/scripts/lib/requirejs/require.js"></script>
+    
+    <script src="/public/assets2/scripts/app/common.js"></script>
 
     <script>
-     require(['/public/assets/scripts/app/common.js'], function(common) {
+     require(['/public/assets2/scripts/app/common.js'], function(common) {
        require(['app/main']);
      });
     </script>
+    -->
     
   </body>
 </html>

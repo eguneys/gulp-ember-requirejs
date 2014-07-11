@@ -140,9 +140,10 @@ gulp.task('build-requirejs', ['build-scripts', 'build-styles'], function(cb) {
 
     requirejs.optimize(config, function(response) {
         rimraf(paths.dev_dist, function() {
-            mv(paths.dev_dist + '2', paths.dev_dist, function() {
-                cb();
-            });
+            // mv(paths.dev_dist + '2', paths.dev_dist, function() {
+            //     cb();
+            // });
+            cb();
         });
     });
 });
