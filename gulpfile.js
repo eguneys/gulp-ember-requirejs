@@ -177,7 +177,7 @@ gulp.task('build-dev-commonjs', ['jshint'], function() {
 
 gulp.task('build-dev-mainjs', ['jshint'], function() {
     return gulp.src([paths.src.common + '/scripts/**/*.js'])
-        .pipe($.changed(paths.dev_dist + '/scripts'))
+        .pipe($.changed(paths.dev_dist + '/scripts/app'))
         .pipe(gulp.dest(paths.dev_dist + '/scripts/app'));
 });
 
@@ -210,10 +210,10 @@ gulp.task('build-requirejs', ['build-scripts', 'build-styles'], function(cb) {
 
     requirejs.optimize(config, function(response) {
         rimraf(paths.dev_dist, function() {
-            // mv(paths.dev_dist + '2', paths.dev_dist, function() {
-            //     cb();
-            // });
-            cb();
+            mv(paths.dev_dist + '2', paths.dev_dist, function() {
+                cb();
+            });
+            //cb();
         });
     });
 });
@@ -305,6 +305,9 @@ gulp.task('wiredep', function() {
 
 gulp.task('serve', ['build-dev'], function() {
     $.nodemon({ script: 'config/server.js',
+                ignore: [
+                    'node_modules/*'
+                ],
                 watch: [
                     'config/**/*.js',
                     'lib'

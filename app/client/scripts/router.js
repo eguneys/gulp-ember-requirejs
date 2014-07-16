@@ -1,4 +1,4 @@
-define(['app/app', 'routes/index_route', 'routes/guides_route'], function(App) {
+define(['app/app', 'routes/common'], function(App) {
     App.Router.map(function() {
         this.resource('guides', function() {
             this.route('guide', { path: '/:guide_id' });
