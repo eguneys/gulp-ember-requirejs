@@ -37,7 +37,6 @@ gulp.task('build-dev-sass', function() {
         }))
         .pipe($.concat('main.css'))
         .pipe($.autoprefixer('last 1 version'))
-      //.pipe(gulp.dest('.tmp/styles'));
         .pipe(gulp.dest(paths.dev_dist + '/styles'));
 });
 
@@ -68,11 +67,19 @@ gulp.task('build-dev-extras', function() {
         .pipe(gulp.dest(paths.dev_dist));
 });
 
-gulp.task('build-dev-templates', function() {
+
+gulp.task('build-dev-templates4', function() {
     var amdModulePrefix = 'define(["ember"], function(Ember) {',
         amdModulePostfix = '});';
 
     var mergeStream = require('merge-stream')();
+
+    var directoryFilter = $.filter(function (file) { return file.isDirectory(); });
+    
+    return gulp.src([paths.src.common + '/templates/**/*.hbs'])
+        .pipe($.filter(function(file) {
+            console.log(file);
+        }));
     
     for (var src in templatePaths) {
         var dst = templatePaths[src];
@@ -88,6 +95,69 @@ gulp.task('build-dev-templates', function() {
         mergeStream.add(stream);
     }
     return mergeStream;
+});
+
+gulp.task('build-dev-templates', function() {
+    var amdModulePrefix = 'define(["ember"], function(Ember) {',
+        amdModulePostfix = '});';
+
+    var mergeStream = require('merge-stream')();
+
+    for (var src in templatePaths) {
+        var dst = templatePaths[src];
+        var stream = gulp.src([paths.src.common + '/templates/' + src + '**/*.hbs'])
+            .pipe($.plumber())
+            .pipe($.emberTemplates({
+                type: 'browser'
+            }))
+            .pipe($.concat(dst + '.js'))
+            .pipe($.insert.wrap(amdModulePrefix, amdModulePostfix))
+            .pipe(gulp.dest(paths.dev_dist + '/templates'));
+
+        mergeStream.add(stream);
+    }
+    return mergeStream;
+});
+
+function getFolderMap(dir) {
+    var fs = require('fs');
+    var path = require('path');
+    
+    var result = {};
+    fs.readdirSync(dir)
+        .filter(function(file) {
+            if( fs.statSync(path.join(dir, file)).isDirectory()) {
+                result[file] = file;
+            }
+        });
+
+    return result;
+};
+
+gulp.task('build-dev-templates3', function() {
+    var amdModulePrefix = 'define(["ember"], function(Ember) {',
+        amdModulePostfix = '});';
+
+    var mergeStream = require('merge-stream')();
+
+    var templatePaths = getFolderMap(paths.src.common + '/templates');
+
+    templatePaths['./'] = 'common';
+
+    for (var src in templatePaths) {
+        var dst = templatePaths[src];
+        var stream = gulp.src([paths.src.common + '/templates/' + src + '**/*.hbs'])
+            .pipe($.plumber())
+            .pipe($.emberTemplates({
+                type: 'browser'
+            }))
+            .pipe($.concat(dst + '.js'))
+            .pipe($.insert.wrap(amdModulePrefix, amdModulePostfix))
+            .pipe(gulp.dest(paths.dev_dist + '/templates'));
+
+        mergeStream.add(stream);
+    }
+    return mergeStream;    
 });
 
 gulp.task('build-dev-templates2', function() {
@@ -162,7 +232,7 @@ gulp.task('build-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev
 
 gulp.task('build-dev-styles', ['build-dev-sass', 'build-dev-fonts', 'build-dev-images', 'build-dev-extras']);
 
-gulp.task('build-dev-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates']);
+gulp.task('build-dev-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates3']);
 
 gulp.task('build-dev', ['build-dev-scripts', 'build-dev-styles']);
 
