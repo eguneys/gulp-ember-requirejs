@@ -67,106 +67,43 @@ gulp.task('build-dev-extras', function() {
         .pipe(gulp.dest(paths.dev_dist));
 });
 
+gulp.task('build-dev-templates', function() {
+    var mergeStream = require('merge-stream');
+    var fs = require('fs');
 
-gulp.task('build-dev-templates4', function() {
     var amdModulePrefix = 'define(["ember"], function(Ember) {',
         amdModulePostfix = '});';
 
-    var mergeStream = require('merge-stream')();
 
     var directoryFilter = $.filter(function (file) { return file.isDirectory(); });
+
+    var dFilter2 = fs.readdirSync(paths.src.common + '/templates').filter(function(name) {
+        return fs.statSync(paths.src.common + '/templates/' + name).isDirectory();
+    });
+
+    dFilter2.push('.');
     
-    return gulp.src([paths.src.common + '/templates/**/*.hbs'])
-        .pipe($.filter(function(file) {
-            console.log(file);
-        }));
-    
-    for (var src in templatePaths) {
-        var dst = templatePaths[src];
-        var stream = gulp.src([paths.src.common + '/templates/' + src + '**/*.hbs'])
+    var streams = dFilter2.map(function(name) {
+
+        var srcGlob = name==='.'?'*.hbs':(name + '/**/*.hbs');
+        var dst = name==='.'?'common':name;
+        var rightPath = name==='.'?'':dst + '/';
+        
+        var renameToRightPath = $.rename(function(path) { path.dirname = rightPath + path.dirname; });
+        
+        return gulp.src(paths.src.common + '/templates/' + srcGlob)
             .pipe($.plumber())
+            .pipe(renameToRightPath)
+             //.pipe($.filter(function(f) { console.log(f); }))
             .pipe($.emberTemplates({
                 type: 'browser'
             }))
             .pipe($.concat(dst + '.js'))
             .pipe($.insert.wrap(amdModulePrefix, amdModulePostfix))
             .pipe(gulp.dest(paths.dev_dist + '/templates'));
-
-        mergeStream.add(stream);
-    }
-    return mergeStream;
-});
-
-gulp.task('build-dev-templates', function() {
-    var amdModulePrefix = 'define(["ember"], function(Ember) {',
-        amdModulePostfix = '});';
-
-    var mergeStream = require('merge-stream')();
-
-    for (var src in templatePaths) {
-        var dst = templatePaths[src];
-        var stream = gulp.src([paths.src.common + '/templates/' + src + '**/*.hbs'])
-            .pipe($.plumber())
-            .pipe($.emberTemplates({
-                type: 'browser'
-            }))
-            .pipe($.concat(dst + '.js'))
-            .pipe($.insert.wrap(amdModulePrefix, amdModulePostfix))
-            .pipe(gulp.dest(paths.dev_dist + '/templates'));
-
-        mergeStream.add(stream);
-    }
-    return mergeStream;
-});
-
-function getFolderMap(dir) {
-    var fs = require('fs');
-    var path = require('path');
+    });
     
-    var result = {};
-    fs.readdirSync(dir)
-        .filter(function(file) {
-            if( fs.statSync(path.join(dir, file)).isDirectory()) {
-                result[file] = file;
-            }
-        });
-
-    return result;
-};
-
-gulp.task('build-dev-templates3', function() {
-    var amdModulePrefix = 'define(["ember"], function(Ember) {',
-        amdModulePostfix = '});';
-
-    var mergeStream = require('merge-stream')();
-
-    var templatePaths = getFolderMap(paths.src.common + '/templates');
-
-    templatePaths['./'] = 'common';
-
-    for (var src in templatePaths) {
-        var dst = templatePaths[src];
-        var stream = gulp.src([paths.src.common + '/templates/' + src + '**/*.hbs'])
-            .pipe($.plumber())
-            .pipe($.emberTemplates({
-                type: 'browser'
-            }))
-            .pipe($.concat(dst + '.js'))
-            .pipe($.insert.wrap(amdModulePrefix, amdModulePostfix))
-            .pipe(gulp.dest(paths.dev_dist + '/templates'));
-
-        mergeStream.add(stream);
-    }
-    return mergeStream;    
-});
-
-gulp.task('build-dev-templates2', function() {
-    return gulp.src([paths.src.common + '/templates/**/*.hbs'])
-        .pipe($.emberTemplates({
-            type: 'amd'
-        }))
-        .pipe($.concat('common.js'))
-        .pipe(gulp.dest(paths.dev_dist + '/templates'));
+    return mergeStream(streams);
 });
 
 gulp.task('build-dev-commonjs', ['jshint'], function() {
