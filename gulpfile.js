@@ -8,6 +8,10 @@ var runSequence = require('run-sequence');
 var rimraf = require('rimraf');
 var mv = require('mv');
 
+
+// npm install --save-dev testem
+var testem = require('testem');
+
 var paths = {
     src: {
         common: 'app/client'
@@ -281,4 +285,15 @@ gulp.task('watch-devserver', ['serve'], function() {
                                     '\nRestart the Gulp process' +
                                     '\n----------'));
     });
+});
+
+/*** TEST ***/
+gulp.task('test', function(done) {
+    var testemOptions = {
+        file: 'testem.json'
+    };
+
+    var t = new testem();
+    
+    t.startCI(testemOptions, done);
 });
