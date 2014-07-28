@@ -16,6 +16,10 @@ define(['app/app'], function(App) {
         
     test('should pass', function() {
         expect(1);
-        equal(1, 1, 'oh yeah');
+        visit('/guides');
+
+        andThen(function() {
+            equal(find('h3').first().text().trim(), "Template Guides");
+        });
     });
 });
