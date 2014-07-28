@@ -13,7 +13,8 @@ require.config({
         requirejs: 'requirejs/require',
         handlebars: 'handlebars/handlebars',
         bootstrap: 'bootstrap-sass-official/assets/javascripts/bootstrap',
-        'ember-data': 'ember-data/ember-data'
+        'ember-data': 'ember-data/ember-data',
+        'ember-qunit': 'ember-qunit/dist/globals/main'
     },
     shim: {
         ember: {
@@ -39,12 +40,9 @@ require.config({
                 'jquery',
                 'bootstrap/transition'
             ]
+        },
+        'ember-qunit': {
+            deps: ['ember']
         }
     }
-});
-
-require(['app/app', 'app/main'], function(App) {
-    App.rootElement = "#ember-fixture";
-    App.setupForTesting();
-    App.injectTestHelpers();
 });

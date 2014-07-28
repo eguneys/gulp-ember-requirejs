@@ -23,6 +23,10 @@
     "font-awesome": "~4.1.0"
   },
   "resolutions": {
-    "jquery": "~2.1.1"
+    "jquery": "~2.1.1",
+    "ember-data": "~1.0.0-beta.7"
+  },
+  "devDependencies": {
+    "ember-qunit": "~0.1.8"
   }
 }

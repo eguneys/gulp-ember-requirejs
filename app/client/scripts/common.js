@@ -1,6 +1,4 @@
 requirejs.config({
-    //deps: ['app/main'],
-    //baseUrl: '/public/assets/scripts/lib',
     paths: {
         app: '../app',
         routes: '../app/routes',
@@ -14,7 +12,9 @@ requirejs.config({
         requirejs: 'requirejs/require',
         handlebars: 'handlebars/handlebars',
         bootstrap: 'bootstrap-sass-official/assets/javascripts/bootstrap',
-        'ember-data': 'ember-data/ember-data'
+        'ember-data': 'ember-data/ember-data',
+        'ember-qunit': 'ember-qunit/dist/cjs/main',
+        'font-awesome': 'font-awesome/fonts/*'
     },
     shim: {
         ember: {
