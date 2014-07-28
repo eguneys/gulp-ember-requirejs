@@ -1,5 +1,6 @@
 {
     "framework": "qunit",
     "test_page": "tests/index.mustache",
-    "src_files": "tests/**/*.js"
+    "src_files": ["tests/**/*.js",
+                  "public/assets/scripts/**/*.js"]
 }

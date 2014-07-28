@@ -1,5 +1,7 @@
-logos for the template page
-at least two ember controllers, models
+TESTEM:
+
+gulp devtdd task runs testem in dev mode and runs watch-devserver task too.
+testem in dev mode watches public folder, also watch-devserver task watches public folder. maybe combine two together?
 
 
 NOTES:

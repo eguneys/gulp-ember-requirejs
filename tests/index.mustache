@@ -21,7 +21,7 @@
 <script>
  QUnit.config.autostart = false;
  var files = [];
- {{#serve_files}}files.push("../{{src}}");{{/serve_files}}
+ {{#serve_files}} if ("{{src}}".match(/^test.*test.js$/)) { files.push("../{{src}}"); } {{/serve_files}}
 
  require(['../tests/test-setup.js'], function() {
    

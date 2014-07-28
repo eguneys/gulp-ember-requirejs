@@ -173,7 +173,7 @@ gulp.task('build-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev
 
 gulp.task('build-dev-styles', ['build-dev-sass', 'build-dev-fonts', 'build-dev-images', 'build-dev-extras']);
 
-gulp.task('build-dev-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates3']);
+gulp.task('build-dev-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates']);
 
 gulp.task('build-dev', ['build-dev-scripts', 'build-dev-styles']);
 
@@ -196,6 +196,13 @@ gulp.task('devserver', function(cb) {
 });
 
 
+gulp.task('devtdd', function(cb) {
+    runSequence('clean',
+                ['build-dev',
+                 'watch-devserver'],
+                'tdd',
+                cb);
+});
 
 /*** SERVE / WATCH / RELOAD ***/
 
@@ -296,4 +303,15 @@ gulp.task('test', function(done) {
     var t = new testem();
     
     t.startCI(testemOptions, done);
+});
+
+
+gulp.task('tdd', function(done) {
+    var testemOptions = {
+        file: 'testem.json'
+    };
+
+    var t = new testem();
+
+    t.startDev(testemOptions, done);
 });
