@@ -8,7 +8,6 @@ var runSequence = require('run-sequence');
 var rimraf = require('rimraf');
 var mv = require('mv');
 
-
 // npm install --save-dev testem
 var testem = require('testem');
 
@@ -17,12 +16,6 @@ var paths = {
         common: 'app/client'
     },
     dev_dist: 'public/assets'
-};
-
-var templatePaths = {
-    './': 'common',
-    'home': 'home',
-    'guides': 'guides'
 };
 
 /*** BUILD ***/
