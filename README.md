@@ -269,6 +269,7 @@ requirejs build config. It's inside `gulpfile.js`.
         }
     ]
 }
+```
 
 And, don't forget to add your new route to your `router.js`.
 
@@ -282,7 +283,9 @@ define(['app/app', 'routes/guides_route'], function(App) {
 ```
 
 Note: If you are using `generator-emberfs` all these steps are done
-automatically. See `generator-emberfs` for more details.
+automatically. See
+[generator-emberfs](https://github.com/eguneys/generator-emberfs) for
+more details.
 
 ### Precompiling Templates
 
@@ -319,7 +322,7 @@ precompiles into:
 
 ### Resolving from template helpers
 
-`{{partial "foo"}} will render the template within `templates/foo.hbs`
+`{{partial "foo"}}` will render the template within `templates/foo.hbs`
 
 ### Using global variables or external scripts
 
