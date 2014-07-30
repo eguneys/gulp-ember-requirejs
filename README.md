@@ -4,7 +4,7 @@ Ember Fullstack is a fullstack project template for Ember.js and
 Express projects. It allows users to quickly iterate while building
 ambitious applications.
 
-It is best used in conjunction with
+It is best used with
 generator-emberfs. That provides you with this template as well as
 scaffolding.
 
@@ -91,8 +91,8 @@ Integration tests will run on PhantomJS, You can install via npm:
 ### Launch the template
 
 ```bash
-    cd template-app
-    gulp devserver
+cd template-app
+gulp devserver
 ```
 
 navigate to http://localhost:3000 to see your new app.
@@ -176,7 +176,7 @@ when Ember looks up the index route, it will find this module.
 You have to require dependencies with the following syntax:
 
 ```javascript
-    define(['app/app', 'mixins/foo`], function(App) {
+    define(['app/app', 'mixins/foo'], function(App) {
     });
 ```
 
@@ -215,15 +215,14 @@ Normally without lazy loading, you would define a route like this:
 
 If you want to lazy load the dependencies for this route, you would define it like this:
 
+`File: scripts/routes/guides_route.js`
 ```javascript
 
     define(['ember',
             'app/app',
             'mixins/lazy_loader_mixin'], function(Ember, App) {
                 App.GuidesRoute = Ember.Route.extend(App.LazyLoaderMixin, {
-            requireLists: ['models/guide',
-                           'controllers/guide_controller',
-                           'templates/guides'],
+            requireLists: ['routes/guides_deps'],
 
             model: function() {
                 return this.store.find('guide');
@@ -235,6 +234,55 @@ If you want to lazy load the dependencies for this route, you would define it li
 
 `LazyLoaderMixin` calls `require` for `requireLists` at `beforeModel`
 hook so those dependencies loads only when the route is visited.
+
+`routes/guides_deps` module is a module defined in `routes/guides_deps.js`
+and its contents include the dependencies that your route lazy loads.
+
+`File: scripts/routes/guides_deps.js`
+```javascript
+define(['models/guide',
+        'controllers/guide_controller',
+        'templates/guides']);
+```
+
+When optimized, all dependencies in `routes/guides_deps` merges into
+this file. When you visit the `guides` route only then this file is
+loaded.
+
+Finally you need to include `routes/guides_deps` as a module in
+requirejs build config. It's inside `gulpfile.js`.
+
+`File: gulpfile.js`
+```javascript
+{
+    modules: [
+        // `app/common` module is already defined.
+        {
+            name: 'app/common',
+            include: ['app/main']
+        },
+        // you include `routes/guides_deps` module
+        // also exclude 'app/common' module.
+        {
+            name: `routes/guides_deps`,
+            exclude: ['app/common']
+        }
+    ]
+}
+
+And, don't forget to add your new route to your `router.js`.
+
+`File: scripts/router.js`
+```javascript
+define(['app/app', 'routes/guides_route'], function(App) {
+    App.Router.map(function() {
+        this.route('guides');
+    });
+});
+```
+
+Note: If you are using `generator-emberfs` all these steps are done
+automatically. See `generator-emberfs` for more details.
 
 ### Precompiling Templates
 

@@ -156,10 +156,6 @@ gulp.task('build-requirejs', ['build-scripts', 'build-styles'], function(cb) {
 // Build Tasks
 //----
 
-gulp.task('build-optimize', ['build-requirejs'], function () {
-    
-});
-
 gulp.task('build-styles', ['build-dev-sass', 'build-dev-fonts', 'build-dev-images', 'build-dev-extras']);
 
 gulp.task('build-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates']);
@@ -168,7 +164,18 @@ gulp.task('build-dev-styles', ['build-dev-sass', 'build-dev-fonts', 'build-dev-i
 
 gulp.task('build-dev-scripts', ['build-dev-commonjs', 'build-dev-mainjs', 'build-dev-templates']);
 
-gulp.task('build-dev', ['build-dev-scripts', 'build-dev-styles']);
+gulp.task('build-dev', function(cb) {
+    runSequence('clean',
+                ['build-dev-scripts',
+                 'build-dev-styles'],
+                cb);
+});
+
+gulp.task('build-optimize', function (cb) {
+    runSequence('clean',
+                ['build-requirejs'],
+                cb);
+});
 
 gulp.task('build', ['build-optimize'], function() {
     return gulp.src(paths.dev_dist + '/**/*').pipe($.size({title: 'build', gzip: true}));
@@ -181,21 +188,9 @@ gulp.task('build', ['build-optimize'], function() {
 // run clean manually
 //gulp.task('server', ['build', 'watch']);
 
-gulp.task('devserver', function(cb) {
-    runSequence('clean',
-                ['build-dev',
-                 'watch-devserver'],
-                cb);
-});
+gulp.task('devserver', ['build-dev', 'watch-devserver']);
 
-
-gulp.task('devtdd', function(cb) {
-    runSequence('clean',
-                ['build-dev',
-                 'watch-devserver'],
-                'tdd',
-                cb);
-});
+gulp.task('devtdd', ['build-dev', 'watch-devserver', 'tdd']);
 
 /*** SERVE / WATCH / RELOAD ***/
 
@@ -288,7 +283,7 @@ gulp.task('watch-devserver', ['serve'], function() {
 });
 
 /*** TEST ***/
-gulp.task('test', function(done) {
+gulp.task('test', ['build'], function(done) {
     var testemOptions = {
         file: 'testem.json'
     };
@@ -299,7 +294,7 @@ gulp.task('test', function(done) {
 });
 
 
-gulp.task('tdd', function(done) {
+gulp.task('tdd', ['build-dev'], function(done) {
     var testemOptions = {
         file: 'testem.json'
     };
